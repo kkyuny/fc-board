@@ -30,15 +30,15 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
     implementation("com.querydsl:querydsl-jpa:5.1.0:jakarta")
-    kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
+    kapt("com.querydsl:querydsl-apt:5.1.0:jakarta")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    runtimeOnly("com.h2database:h2")
     runtimeOnly("com.mysql:mysql-connector-j")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.kotest:kotest-runner-junit5:5.9.1")
     testImplementation("io.kotest:kotest-assertions-core:5.9.1")
     testImplementation("io.kotest.extensions:kotest-extensions-spring:1.3.0")
+    testImplementation("com.h2database:h2")
 }
 
 kotlin {
