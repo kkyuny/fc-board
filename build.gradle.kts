@@ -6,7 +6,6 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "11.4.0"
     kotlin("plugin.jpa") version "1.9.25"
     kotlin("kapt") version "1.8.22"
-
 }
 
 group = "com.fastcampus"
@@ -55,4 +54,8 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.named<Jar>("jar") {
+    enabled = false
 }

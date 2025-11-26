@@ -9,5 +9,4 @@ class FcBoardApplicationTests {
     @Test
     fun contextLoads() {
     }
-
 }
