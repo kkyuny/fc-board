@@ -5,4 +5,4 @@ services:
       - 'MYSQL_DATABASE=fc_board'
       - 'MYSQL_ROOT_PASSWORD=1234'
     ports:
-      - '3311:3306'
+      - '3312:3306'
