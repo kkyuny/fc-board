@@ -101,3 +101,48 @@ runs-on: ubuntu-latest
 
 ✔ 요약
 EB 생성 → RDS 연결 → EC2 Role 설정 → GitHub Secrets에 AWS 키 저장 → GitHub Actions로 jar 빌드 → EB로 zip 업로드 → EB가 EC2에 자동 배포
+
+## 쿼리 dsl 메서드
+| QueryDSL 메서드     | 반환              | SQL                                |
+| ---------------- | --------------- | ---------------------------------- |
+| `fetch()`        | List<T>         | select * ...                       |
+| `fetchOne()`     | T               | select * ... (1건 예상)               |
+| `fetchFirst()`   | T               | select * ... limit 1               |
+| `fetchCount()`   | Long            | select count(*) ...                |
+| `fetchResults()` | QueryResults<T> | select * ... + select count(*) ... |
+
+- 쿼리 dsl의 조금 더 모던한 사용법(강의와는 다른 사용방법)
+```kotlin
+@Repository
+class CustomPostRepositoryImpl(
+    private val queryFactory: JPAQueryFactory
+) : CustomPostRepository {
+
+    override fun findPageBy(pageRequest: Pageable, filter: PostSearchRequestDto): Page<Post> {
+
+        // 콘텐츠 조회
+        val content = queryFactory
+            .selectFrom(post)
+            .where(
+                filter.title?.let { post.title.contains(it) },
+                filter.createdBy?.let { post.createdBy.eq(it) }
+            )
+            .orderBy(post.createdAt.desc())
+            .offset(pageRequest.offset)
+            .limit(pageRequest.pageSize.toLong())
+            .fetch()
+
+        // 전체 개수 조회
+        val total = queryFactory
+            .select(post.count())
+            .from(post)
+            .where(
+                filter.title?.let { post.title.contains(it) },
+                filter.createdBy?.let { post.createdBy.eq(it) }
+            )
+            .fetchOne() ?: 0L
+
+        return PageImpl(content, pageRequest, total)
+    }
+}
+```
