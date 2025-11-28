@@ -3,10 +3,9 @@ package com.fastcampus.fcboard.domain
 import jakarta.persistence.MappedSuperclass
 import java.time.LocalDateTime
 
-
 @MappedSuperclass
 abstract class BaseEntity(
-    val createdBy: String,
+    val createdBy: String
 ) {
     val createdAt: LocalDateTime = LocalDateTime.now()
     var updatedBy: String? = null

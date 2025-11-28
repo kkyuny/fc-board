@@ -11,7 +11,7 @@ import jakarta.persistence.Id
 class Post(
     createdBy: String,
     title: String,
-    content: String,
+    content: String
 ) : BaseEntity(createdBy) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +22,8 @@ class Post(
     var content: String = content
         protected set
 
-
-    fun update(postUpdateRequestDto: PostUpdateRequestDto){
-        if(postUpdateRequestDto.updatedBy != this.createdBy){
+    fun update(postUpdateRequestDto: PostUpdateRequestDto) {
+        if (postUpdateRequestDto.updatedBy != this.createdBy) {
             throw PostNotUpdatableException()
         }
         this.title = postUpdateRequestDto.title
