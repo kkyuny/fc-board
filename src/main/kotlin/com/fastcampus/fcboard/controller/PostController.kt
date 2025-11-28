@@ -6,6 +6,7 @@ import com.fastcampus.fcboard.controller.dto.PostSearchRequest
 import com.fastcampus.fcboard.controller.dto.PostSummaryResponse
 import com.fastcampus.fcboard.controller.dto.PostUpdateRequest
 import com.fastcampus.fcboard.controller.dto.toDto
+import com.fastcampus.fcboard.controller.dto.toResponse
 import com.fastcampus.fcboard.service.PostService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -59,6 +60,6 @@ class PostController(
         pageable: Pageable,
         postSearchRequest: PostSearchRequest
     ): Page<PostSummaryResponse> {
-        return Page.empty()
+        return postService.findPageBy(pageable, postSearchRequest.toDto()).toResponse()
     }
 }
