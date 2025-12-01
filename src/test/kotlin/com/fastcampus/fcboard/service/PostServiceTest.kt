@@ -1,9 +1,11 @@
 package com.fastcampus.fcboard.service
 
+import com.fastcampus.fcboard.domain.Comment
 import com.fastcampus.fcboard.domain.Post
 import com.fastcampus.fcboard.exception.PostNotDeletableException
 import com.fastcampus.fcboard.exception.PostNotFoundException
 import com.fastcampus.fcboard.exception.PostNotUpdatableException
+import com.fastcampus.fcboard.repository.CommentRepository
 import com.fastcampus.fcboard.repository.PostRepository
 import com.fastcampus.fcboard.service.dto.PostCreateRequestDto
 import com.fastcampus.fcboard.service.dto.PostSearchRequestDto
@@ -21,7 +23,8 @@ import org.springframework.data.repository.findByIdOrNull
 @SpringBootTest
 class PostServiceTest(
     private val postService: PostService,
-    private val postRepository: PostRepository
+    private val postRepository: PostRepository,
+    private val commentRepository: CommentRepository
 ) : BehaviorSpec({
     beforeSpec {
         postRepository.saveAll(
@@ -141,6 +144,7 @@ class PostServiceTest(
         }
     }
     given("게시글 목록조회시") {
+        val saved = postRepository.save(Post(title = "title", content = "content", createdBy = "harris"))
         When("정상 조회시") {
             val postPage = postService.findPageBy(PageRequest.of(0, 5), PostSearchRequestDto())
             then("게시글 페이지가 반환된다.") {
@@ -169,6 +173,19 @@ class PostServiceTest(
                 postPage.content.size shouldBe 5
                 postPage.content[0].title shouldContain "title"
                 postPage.content[0].createdBy shouldBe "harris1"
+            }
+        }
+        When("댓글 추가시") {
+            commentRepository.save(Comment("comment1", saved, createdBy = "harris"))
+            commentRepository.save(Comment("comment2", saved, createdBy = "harris"))
+            commentRepository.save(Comment("comment3", saved, createdBy = "harris"))
+
+            val post = postService.getPost(saved.id)
+            then("댓글이 함께 조회됨을 확인한다.") {
+                post.id shouldBe saved.id
+                post.comments.size shouldBe 3
+                post.comments[0].content shouldBe "comment1"
+                post.comments[0].createdBy shouldBe "harris"
             }
         }
     }
