@@ -13,7 +13,8 @@ import jakarta.persistence.OneToMany
 class Post(
     createdBy: String,
     title: String,
-    content: String
+    content: String,
+    tags: List<String> = emptyList()
 ) : BaseEntity(createdBy) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +23,10 @@ class Post(
     var title: String = title
         protected set
     var content: String = content
+        protected set
+
+    @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = [CascadeType.ALL])
+    var tags: MutableList<Tag> = tags.map { Tag(it, this, createdBy) }.toMutableList()
         protected set
 
     @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = [CascadeType.ALL])
