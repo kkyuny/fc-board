@@ -150,6 +150,7 @@ class PostServiceTest(
                         title = "update title",
                         content = "update content",
                         updatedBy = "harris",
+                        tags = listOf("tag3", "tag2", "tag1")
                     )
                 )
                 val tags = tagRepository.findByPostId(updatedId)
