@@ -8,15 +8,13 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class LikeController(
-    private val likeService: LikeService,
+    private val likeService: LikeService
 ) {
     @PostMapping("/posts/{postId}/likes")
     fun createLike(
         @PathVariable postId: Long,
-        @RequestParam createdBy: String,
+        @RequestParam createdBy: String
     ): Long {
         return likeService.createLike(postId, createdBy)
-
-
     }
 }

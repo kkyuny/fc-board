@@ -20,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional(readOnly = true)
 class PostService(
-    private val postRepository: PostRepository
+    private val postRepository: PostRepository,
+    private val likeService: LikeService
 ) {
     @Transactional
     fun createPost(requestDto: PostCreateRequestDto): Long {
@@ -43,10 +44,12 @@ class PostService(
     }
 
     fun getPost(id: Long): PostDetailResponseDto {
-        return postRepository.findByIdOrNull(id)?.toDetailResponseDto() ?: throw PostNotFoundException()
+        val likeCount = likeService.countLike(id)
+        return postRepository.findByIdOrNull(id)?.toDetailResponseDto(likeCount) ?: throw PostNotFoundException()
     }
 
     fun findPageBy(pageRequest: Pageable, postSearchRequestDto: PostSearchRequestDto): Page<PostSummaryResponseDto> {
-        return postRepository.findPageBy(pageRequest, postSearchRequestDto).toSummaryResponseDto()
+        return postRepository.findPageBy(pageRequest, postSearchRequestDto)
+            .toSummaryResponseDto(likeService::countLike)
     }
 }
