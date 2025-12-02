@@ -10,7 +10,7 @@ class LikeController {
     @PostMapping("/posts/{postId}/likes")
     fun createLike(
         @PathVariable postId: Long,
-        @RequestParam createdBy: String,
+        @RequestParam createdBy: String
     ): Long {
         println(postId)
         println(createdBy)
