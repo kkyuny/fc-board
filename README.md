@@ -1,3 +1,60 @@
+## Infra
+🏗 전체 인프라 구조
+```mermaid
+flowchart LR
+
+    subgraph Client
+        Dev[Dev]
+        Push[Push]
+    end
+
+    subgraph GitHub
+        Actions[Actions]
+        Build[Build]
+        Zip[Zip]
+    end
+
+    subgraph AWS
+        subgraph S3
+            S3Obj[ZipObj]
+        end
+
+        subgraph EB
+            EBEnv[Env]
+            EC2Inst[EC2]
+            AppRun[App]
+        end
+
+        subgraph DB
+            MySQL[(DB)]
+        end
+    end
+
+    Dev --> Push --> Actions --> Build --> Zip --> S3Obj --> EBEnv
+    EBEnv --> EC2Inst --> AppRun --> MySQL
+```
+
+🚀 배포 워크플로우
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Dev as Developer
+    participant GH as GitHub Actions
+    participant S3 as S3 Bucket
+    participant EB as Elastic Beanstalk
+    participant EC2 as EC2 Instance
+    participant RDS as RDS MySQL
+
+    Dev->>GH: main 브랜치 push
+    GH->>GH: gradle build (bootJar)
+    GH->>GH: deploy.zip 생성
+    GH->>S3: deploy.zip 업로드
+    GH->>EB: EB 환경에 새 버전 배포 요청
+
+    EB->>EC2: 새 버전 다운로드/배치
+    EC2->>EC2: application.jar 실행
+    EC2->>RDS: DB 커넥션
+```
 ## CI/CD (Elastic Beanstalk + GitHub Actions)
 
 ### 1. Elastic Beanstalk 환경 생성
