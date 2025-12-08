@@ -159,6 +159,58 @@ runs-on: ubuntu-latest
 ✔ 요약
 EB 생성 → RDS 연결 → EC2 Role 설정 → GitHub Secrets에 AWS 키 저장 → GitHub Actions로 jar 빌드 → EB로 zip 업로드 → EB가 EC2에 자동 배포
 
+## Redis
+### 1) Gradle 의존성 추가  
+```gradle
+implementation("org.springframework.boot:spring-boot-starter-data-redis")
+```
+### 2) application.yml 설정
+RedisConfig에서 사용할 ${spring.cache.redis.host}, ${spring.cache.redis.port} 값 설정
+```yaml
+spring:
+  cache:
+    type: redis        # 캐시 저장소를 Redis로 사용
+    redis:
+      host: localhost # Redis 서버 주소
+      port: 6379      # Redis 서버 포트
+```
+### 3) Docker로 Redis 실행
+```bash
+docker run -d --name redis-local -p 6379:6379 redis
+```
+
+### 4) RedisConfig 설정
+```kotlin
+@Configuration
+class RedisConfig {
+
+    @Value("\${spring.cache.redis.host}")
+    lateinit var host: String // lateinit: runtime에 값 입력
+
+    @Value("\${spring.cache.redis.port}")
+    lateinit var port: String
+
+    // Redis 서버와 연결해주는 커넥션 팩토리 생성
+    @Bean
+    fun redisConnectionFactory(): RedisConnectionFactory {
+        return LettuceConnectionFactory(host, port.toInt())
+    }
+
+    // RedisTemplate은 Redis의 key-value 조작을 위한 핵심 객체
+    @Bean
+    fun redisTemplate(): RedisTemplate<String, Any> {
+        val redisTemplate = RedisTemplate<String, Any>()
+        redisTemplate.connectionFactory = redisConnectionFactory()
+
+        // key와 value를 문자열 기반 직렬화로 설정
+        redisTemplate.keySerializer = StringRedisSerializer()
+        redisTemplate.valueSerializer = StringRedisSerializer()
+
+        return redisTemplate
+    }
+}
+```
+
 ## 쿼리 dsl 메서드
 | QueryDSL 메서드     | 반환              | SQL                                |
 | ---------------- | --------------- | ---------------------------------- |
